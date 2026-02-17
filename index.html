@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Онлайн тюнер для домбры</title>
+
+  <meta name="description" content="Онлайн тюнер для домбры. Бесплатная настройка домбры по микрофону прямо в браузере.">
+  <meta name="keywords" content="настройка домбры, тюнер домбры, домбра онлайн, dombra tuner">
+  <meta name="author" content="Alisher">
+
+  <style>
+  * { box-sizing: border-box; }
+  
+  body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #a88e67, #957d5a);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #2c1810;
+  padding: 20px;
+  }
+
+
+ 
+  body::before {
+   content: "";
+   position: fixed;
+   left: -500px;
+   top: 140%;
+   transform: translateY(-50%);
+   width: 1100px;
+   height: 2600px;
+   background-image: url("д1.PNG");
+   background-repeat: no-repeat;
+   background-size: contain;
+   opacity: 1;
+  }
+
+  body::after {
+   content: "";
+   position: fixed;
+   right: -500px;
+   top: 70%;
+   transform: translateY(-50%);
+   width: 1100px;
+   height: 2600px;
+   background-image: url("д2.PNG");
+   background-repeat: no-repeat;
+   background-size: contain;
+   opacity: 1;
+  }
+
+
+  #freq { 
+    font-size: 48px; 
+    margin: 15px 0;
+    font-weight: bold;
+    color: #2c1810;
+  }
+  h2 {
+  font-size: 26px;
+  margin-bottom: 15px;                
+ }
+
+  #noteStatus {
+  font-size: 16px;
+  margin: 15px 0;
+  opacity: 0.85;
+  min-height: 24px;
+ }
+
+  h1 {
+    margin: 0 0 10px 0;
+    font-size: 28px;
+    color: #2c1810;
+  }
+  
+  .instructions {
+    font-size: 14px;
+    color: #5a3f2a;
+    margin-bottom: 25px;
+    opacity: 0.9;
+  }
+  
+  .mic-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: #999;
+    border-radius: 50%;
+    margin-left: 8px;
+    animation: none;
+  }
+  
+  .mic-indicator.active {
+    background: #ff4444;
+    animation: pulse 1s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+
+  .controls { 
+    margin-top: 25px; 
+    display: flex; 
+    justify-content: center; 
+    gap: 15px; 
+    flex-wrap: wrap;
+  }
+  button {
+    font-size: 16px;
+    padding: 13px 22px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    background: #4b2e1e;
+    color: #e8d4b8;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+    flex: 1;
+    min-width: 140px;
+  }
+
+  button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    background: #5c3a28;
+  }
+
+  button:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  
+  button.active {
+    background: #d4a574;
+    color: #2c1810;
+    border-color: #2c1810;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+  }
+  
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+
+  #barContainer {
+   width: 100%;
+   height: 30px;
+   background: #2c1810;
+   border-radius: 15px;
+   margin: 35px 0;
+   position: relative;
+   overflow: hidden;
+   box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+
+  #bar {
+   position: absolute;
+   left: 50%;
+   transform: translateX(-50%);
+   width: 8px;
+   height: 100%;
+   background: #ff5555;
+   border-radius: 10px;
+   transition: background-color 0.3s, box-shadow 0.3s;
+   box-shadow: 0 0 10px rgba(255,85,85,0.5);
+  }
+  
+  #bar.tuned {
+    background: #2ecc71;
+    box-shadow: 0 0 20px rgba(46,204,113,0.8);
+    animation: glow 0.6s;
+  }
+  
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(46,204,113,0.8); }
+    50% { box-shadow: 0 0 30px rgba(46,204,113,1); }
+  }
+
+
+ .container {
+   background: #c9a978;
+   padding: 40px 30px;
+   border-radius: 22px;
+   width: 100%;
+   max-width: 500px;
+   text-align: center;
+   box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+   animation: slideUp 0.5s ease-out;
+  }
+  
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Онлайн тюнер для домбры</h1>
+<p class="instructions"></p>
+
+<div id="freq">— Hz</div>
+<div id="noteStatus">Нажми кнопку струны</div>
+
+<div class="controls">
+  <button id="lowBtn">Нижняя (196 Hz)</button>
+  <button id="highBtn">Верхняя (146 Hz)</button>
+</div>
+
+<div class="controls" style="margin-top: 15px;">
+  <button id="micBtn" style="flex: 0.5; min-width: 120px;">🎤 Микрофон</button>
+  <button id="stopBtn" style="flex: 0.5; min-width: 120px; display: none;">⏹ Стоп</button>
+</div>
+
+<div id="barContainer">
+  <div id="bar"></div>
+</div>
+
+<script>
+let targetFreq = 0;
+let audioContext, analyser, dataArray;
+let animationId = null;
+let currentStream = null;
+
+document.getElementById('lowBtn').onclick = () => {
+  targetFreq = 196;
+  document.getElementById("noteStatus").innerText = "Цель: 196 Hz";
+  document.getElementById('lowBtn').classList.add('active');
+  document.getElementById('highBtn').classList.remove('active');
+};
+
+document.getElementById('highBtn').onclick = () => {
+  targetFreq = 146;
+  document.getElementById("noteStatus").innerText = "Цель: 146 Hz";
+  document.getElementById('highBtn').classList.add('active');
+  document.getElementById('lowBtn').classList.remove('active');
+};
+
+document.getElementById('micBtn').onclick = start;
+document.getElementById('stopBtn').onclick = stop;
+
+function start() {
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+    currentStream = stream;
+    audioContext = new AudioContext();
+    const source = audioContext.createMediaStreamSource(stream);
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 2048;
+    dataArray = new Float32Array(analyser.fftSize);
+    source.connect(analyser);
+    
+    document.getElementById('micBtn').style.display = 'none';
+    document.getElementById('stopBtn').style.display = 'block';
+    document.getElementById('micIndicator').classList.add('active');
+    
+    update();
+  }).catch(err => {
+    alert('Ошибка доступа к микрофону: ' + err.message);
+  });
+}
+
+function stop() {
+  if (currentStream) {
+    currentStream.getTracks().forEach(track => track.stop());
+  }
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+  }
+  if (audioContext) {
+    audioContext.close();
+  }
+  
+  document.getElementById('micBtn').style.display = 'block';
+  document.getElementById('stopBtn').style.display = 'none';
+  document.getElementById('micIndicator').classList.remove('active');
+  document.getElementById('freq').innerText = '— Hz';
+  document.getElementById('noteStatus').innerText = 'Нажми кнопку струны';
+}
+
+function update() {
+  analyser.getFloatTimeDomainData(dataArray);
+  const freq = autoCorrelate(dataArray, audioContext.sampleRate);
+
+  if (freq) {
+    document.getElementById('freq').innerText = Math.round(freq) + " Hz";
+    updateBar(freq);
+  }
+
+  animationId = requestAnimationFrame(update);
+}
+
+function updateBar(freq) {
+  if (targetFreq === 0) return;
+
+  const diff = freq - targetFreq;
+  const bar = document.getElementById('bar');
+
+  // позиция от 0% до 100%, центр = 50%
+  let pos = 50 + diff / 2; 
+  pos = Math.max(0, Math.min(100, pos));
+  bar.style.width = pos + "%";
+
+  if (Math.abs(diff) < 1.5) {
+    bar.classList.add('tuned');
+    bar.style.background = "#2ecc71";
+    document.getElementById("noteStatus").innerText = "✅ Настроено идеально!";
+   } else {
+    bar.classList.remove('tuned');
+    bar.style.background = "#ff5555";
+    if (diff < 0) document.getElementById("noteStatus").innerText = "↑ Ниже — подтяни струну";
+    else document.getElementById("noteStatus").innerText = "↓ Выше — ослабь струну";
+  }
+}
+
+function autoCorrelate(buf, sampleRate) {
+  // вычисление громкости
+  let SIZE = buf.length;
+  let rms = 0;
+  for (let i = 0; i < SIZE; i++) rms += buf[i] * buf[i];
+  rms = Math.sqrt(rms / SIZE);
+
+  // Порог чувствительности — слышит только домбру рядом
+  if (rms < 0.04) return null;
+
+  let c = new Array(SIZE).fill(0);
+  for (let i = 0; i < SIZE; i++)
+    for (let j = 0; j < SIZE - i; j++) c[i] += buf[j] * buf[j + i];
+
+  let d = 0; while (c[d] > c[d + 1]) d++;
+  let maxval = -1, maxpos = -1;
+  for (let i = d; i < SIZE; i++) if (c[i] > maxval) { maxval = c[i]; maxpos = i; }
+  if (maxpos === 0) return null;
+
+  return sampleRate / maxpos;
+}
+</script>
+
+</div>
+</body>
+</html>
