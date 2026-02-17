@@ -262,7 +262,6 @@ function start() {
     
     document.getElementById('micBtn').style.display = 'none';
     document.getElementById('stopBtn').style.display = 'block';
-    document.getElementById('micIndicator').classList.add('active');
     
     update();
   }).catch(err => {
@@ -283,7 +282,6 @@ function stop() {
   
   document.getElementById('micBtn').style.display = 'block';
   document.getElementById('stopBtn').style.display = 'none';
-  document.getElementById('micIndicator').classList.remove('active');
   document.getElementById('freq').innerText = '— Hz';
   document.getElementById('noteStatus').innerText = 'Нажми кнопку струны';
 }
